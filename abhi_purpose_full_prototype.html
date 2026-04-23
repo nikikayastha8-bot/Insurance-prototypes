@@ -1,0 +1,591 @@
+
+<style>
+*{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:var(--font-sans);}
+
+.proto-shell{background:#f4f5f7;border-radius:12px;overflow:hidden;border:0.5px solid var(--color-border-tertiary);}
+.proto-nav{background:#1a2340;display:flex;gap:0;padding:0 12px;align-items:center;}
+.proto-nav-item{padding:10px 14px;font-size:12px;color:rgba(255,255,255,0.5);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;}
+.proto-nav-item.active{color:#fff;border-bottom-color:#c0392b;}
+.proto-body{display:grid;grid-template-columns:180px 1fr;min-height:520px;}
+.sidebar{background:#1a2340;padding:12px 0;}
+.sb-logo{padding:8px 14px 16px;border-bottom:0.5px solid rgba(255,255,255,0.08);margin-bottom:8px;}
+.sb-logo-text{font-size:14px;font-weight:500;color:#fff;}
+.sb-logo-sub{font-size:10px;color:rgba(255,255,255,0.4);}
+.sb-item{padding:8px 14px;font-size:12px;color:rgba(255,255,255,0.55);cursor:pointer;display:flex;align-items:center;gap:8px;border-left:2px solid transparent;}
+.sb-item:hover{color:#fff;background:rgba(255,255,255,0.05);}
+.sb-item.active{color:#fff;background:rgba(255,255,255,0.08);border-left-color:#c0392b;}
+.sb-icon{width:14px;height:14px;border-radius:3px;background:rgba(255,255,255,0.15);flex-shrink:0;}
+.sb-icon.red{background:#c0392b;}
+.sb-icon.green{background:#27ae60;}
+.sb-icon.amber{background:#e67e22;}
+.sb-section-label{padding:12px 14px 4px;font-size:10px;color:rgba(255,255,255,0.25);letter-spacing:0.08em;text-transform:uppercase;}
+
+.main-content{background:#f4f5f7;padding:14px;overflow:auto;}
+.page{display:none;}
+.page.active{display:block;}
+
+.topbar{background:#fff;border-radius:8px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;border:0.5px solid #e8e8e8;}
+.greeting{font-size:13px;font-weight:500;color:#1a2340;}
+.greeting span{font-size:11px;color:#888;font-weight:400;margin-left:6px;}
+.silver-badge{background:#e8f4fd;color:#1a6aa8;font-size:10px;padding:2px 8px;border-radius:10px;font-weight:500;}
+.top-actions{display:flex;gap:6px;}
+.btn-red{background:#c0392b;color:#fff;border:none;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;font-weight:500;}
+.btn-outline{background:#fff;color:#1a2340;border:1px solid #ddd;border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;}
+
+.section-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;}
+.section-title{font-size:12px;font-weight:500;color:#1a2340;}
+.view-all{font-size:11px;color:#c0392b;cursor:pointer;}
+
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:12px;}
+.kpi-card{background:#fff;border-radius:8px;padding:10px 12px;border:0.5px solid #e8e8e8;cursor:pointer;transition:border-color .15s;}
+.kpi-card:hover,.kpi-card.sel{border-color:#c0392b;}
+.kpi-label{font-size:10px;color:#888;margin-bottom:4px;line-height:1.3;}
+.kpi-val{font-size:20px;font-weight:500;color:#1a2340;}
+.kpi-sub{font-size:10px;color:#aaa;margin-top:2px;}
+.kpi-trend-up{color:#27ae60;font-size:10px;}
+.kpi-trend-dn{color:#c0392b;font-size:10px;}
+
+.card{background:#fff;border-radius:8px;border:0.5px solid #e8e8e8;padding:12px 14px;margin-bottom:12px;}
+.two-col{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;}
+.three-col{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:12px;}
+
+.prog-row{display:flex;align-items:center;gap:8px;margin-bottom:7px;}
+.prog-label{font-size:11px;color:#555;width:100px;flex-shrink:0;}
+.prog-bar{flex:1;height:6px;background:#f0f0f0;border-radius:3px;overflow:hidden;}
+.prog-fill{height:100%;border-radius:3px;}
+.prog-pct{font-size:11px;font-weight:500;color:#1a2340;width:32px;text-align:right;flex-shrink:0;}
+
+.nudge-item{border-left:3px solid #c0392b;padding:8px 10px;background:#fff8f7;border-radius:0 6px 6px 0;margin-bottom:6px;}
+.nudge-item.amber{border-left-color:#e67e22;background:#fffbf4;}
+.nudge-item.green{border-left-color:#27ae60;background:#f4fdf7;}
+.nudge-msg{font-size:11px;color:#333;margin-bottom:4px;}
+.nudge-actions{display:flex;gap:5px;}
+.nudge-btn{font-size:10px;padding:2px 8px;border-radius:10px;border:none;cursor:pointer;font-weight:500;}
+.nb-sms{background:#e8f4fd;color:#1a6aa8;}
+.nb-wa{background:#e8fdf0;color:#1a7a40;}
+.nb-email{background:#f4f0fd;color:#5a3b9a;}
+.nb-view{background:#f0f0f0;color:#555;}
+
+.cust-table{width:100%;border-collapse:collapse;font-size:11px;}
+.cust-table th{font-size:10px;color:#888;font-weight:500;text-align:left;padding:5px 8px;border-bottom:0.5px solid #eee;white-space:nowrap;}
+.cust-table td{padding:6px 8px;border-bottom:0.5px solid #f5f5f5;color:#333;vertical-align:middle;}
+.cust-table tr:hover td{background:#fafafa;}
+.status-dot{width:7px;height:7px;border-radius:50%;display:inline-block;margin-right:4px;}
+.dot-green{background:#27ae60;}
+.dot-amber{background:#e67e22;}
+.dot-red{background:#e74c3c;}
+.pill{display:inline-flex;align-items:center;font-size:10px;padding:2px 7px;border-radius:10px;font-weight:500;gap:3px;}
+.pill-done{background:#e8fdf0;color:#1a7a40;}
+.pill-pend{background:#fff4e6;color:#a0530a;}
+.pill-miss{background:#fdecea;color:#9b1c1c;}
+.send-icon{font-size:11px;cursor:pointer;color:#c0392b;}
+
+.filter-bar{display:flex;gap:6px;margin-bottom:10px;flex-wrap:wrap;}
+.fchip{font-size:10px;padding:3px 10px;border-radius:12px;border:0.5px solid #ddd;cursor:pointer;color:#666;background:#fff;}
+.fchip.active{background:#c0392b;color:#fff;border-color:#c0392b;}
+
+.doughnut-wrap{display:flex;align-items:center;gap:16px;}
+.doughnut-svg{flex-shrink:0;}
+.legend-list{font-size:11px;display:flex;flex-direction:column;gap:5px;}
+.legend-dot{width:8px;height:8px;border-radius:50%;display:inline-block;margin-right:5px;flex-shrink:0;}
+
+.mobile-frame{background:#f4f5f7;border-radius:12px;padding:10px;border:0.5px solid var(--color-border-tertiary);}
+.mobile-screens{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;}
+.phone{background:#1a2340;border-radius:20px;overflow:hidden;border:4px solid #2d3a57;}
+.phone-bar{background:#1a2340;padding:6px 10px;display:flex;align-items:center;justify-content:space-between;}
+.phone-title{font-size:10px;font-weight:500;color:#fff;}
+.phone-back{font-size:10px;color:rgba(255,255,255,0.5);}
+.phone-body{background:#f4f5f7;padding:8px;}
+.phone-card{background:#fff;border-radius:6px;padding:8px 10px;margin-bottom:6px;border:0.5px solid #e8e8e8;}
+.ph-label{font-size:9px;color:#888;margin-bottom:2px;}
+.ph-val{font-size:16px;font-weight:500;color:#1a2340;}
+.ph-sub{font-size:9px;color:#aaa;}
+.ph-row{display:flex;justify-content:space-between;align-items:center;padding:4px 0;border-bottom:0.5px solid #f5f5f5;}
+.ph-row:last-child{border-bottom:none;}
+.ph-name{font-size:10px;color:#333;}
+.ph-badges{display:flex;gap:3px;}
+.ph-badge{font-size:8px;padding:1px 5px;border-radius:8px;font-weight:500;}
+.ph-done{background:#e8fdf0;color:#1a7a40;}
+.ph-pend{background:#fff4e6;color:#a0530a;}
+.ph-miss{background:#fdecea;color:#9b1c1c;}
+.ph-btn{background:#c0392b;color:#fff;border:none;border-radius:5px;padding:4px 10px;font-size:9px;width:100%;margin-top:6px;cursor:pointer;font-weight:500;}
+.ph-prog-row{display:flex;align-items:center;gap:5px;margin-bottom:4px;}
+.ph-prog-bar{flex:1;height:4px;background:#f0f0f0;border-radius:2px;overflow:hidden;}
+.ph-prog-fill{height:100%;border-radius:2px;}
+.ph-prog-lbl{font-size:9px;color:#555;width:60px;flex-shrink:0;}
+.ph-prog-pct{font-size:9px;font-weight:500;color:#1a2340;width:24px;text-align:right;}
+.nudge-strip{background:#fff8f7;border-radius:6px;padding:6px 8px;margin-bottom:6px;border-left:2px solid #c0392b;}
+.ns-msg{font-size:9px;color:#333;margin-bottom:4px;}
+.ns-btns{display:flex;gap:4px;}
+.ns-btn{font-size:8px;padding:2px 6px;border-radius:8px;border:none;cursor:pointer;font-weight:500;}
+
+.tab-switcher{display:flex;gap:0;border-bottom:0.5px solid #e8e8e8;margin-bottom:10px;}
+.ts-tab{padding:7px 12px;font-size:11px;color:#888;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-0.5px;}
+.ts-tab.active{color:#c0392b;border-bottom-color:#c0392b;font-weight:500;}
+
+.inline-note{font-size:10px;color:#888;font-style:italic;margin-top:4px;}
+</style>
+
+<h2 class="sr-only">ABHI One Purpose Drive — interactive prototype covering dashboard, purpose page, My Customers, and mobile app screens</h2>
+
+<div class="proto-shell">
+  <div class="proto-nav">
+    <div class="proto-nav-item active" onclick="showPage('dashboard',this)">Home dashboard</div>
+    <div class="proto-nav-item" onclick="showPage('purpose',this)">Purpose dashboard</div>
+    <div class="proto-nav-item" onclick="showPage('customers',this)">My customers</div>
+    <div class="proto-nav-item" onclick="showPage('mobile',this)">Mobile app</div>
+  </div>
+
+  <div class="proto-body">
+    <div class="sidebar">
+      <div class="sb-logo">
+        <div class="sb-logo-text">ABHI One</div>
+        <div class="sb-logo-sub">Agent portal</div>
+      </div>
+      <div class="sb-item active" onclick="showPage('dashboard',null)"><div class="sb-icon"></div>Dashboard</div>
+      <div class="sb-item" onclick="showPage('customers',null)"><div class="sb-icon"></div>My customers</div>
+      <div class="sb-item"><div class="sb-icon"></div>My leads</div>
+      <div class="sb-item"><div class="sb-icon"></div>Proposals</div>
+      <div class="sb-item"><div class="sb-icon"></div>Renewals</div>
+      <div class="sb-section-label">Engagement</div>
+      <div class="sb-item" onclick="showPage('purpose',null)"><div class="sb-icon red"></div>Purpose</div>
+      <div class="sb-item"><div class="sb-icon green"></div>Claims</div>
+      <div class="sb-item"><div class="sb-icon amber"></div>Events</div>
+    </div>
+
+    <div class="main-content">
+
+      <div id="page-dashboard" class="page active">
+        <div class="topbar">
+          <div>
+            <div class="greeting">Good afternoon, Rajeev (ABH1101006) <span class="silver-badge">Silver</span></div>
+            <div style="font-size:10px;color:#aaa;margin-top:2px;">Thursday, 23 Apr 2026</div>
+          </div>
+          <div class="top-actions">
+            <button class="btn-outline">Get quote</button>
+            <button class="btn-red">+ Create lead</button>
+          </div>
+        </div>
+
+        <div class="three-col">
+          <div class="card" style="margin:0;">
+            <div class="kpi-label">Policies sold</div>
+            <div class="kpi-val">229</div>
+          </div>
+          <div class="card" style="margin:0;">
+            <div class="kpi-label">Premium</div>
+            <div class="kpi-val" style="font-size:16px;">1.51 Cr</div>
+            <div class="kpi-sub">88% of monthly goal</div>
+          </div>
+          <div class="card" style="margin:0;">
+            <div class="kpi-label">Claim count</div>
+            <div class="kpi-val">194</div>
+          </div>
+        </div>
+
+        <div class="card" style="cursor:pointer;border-color:#c0392b;" onclick="showPage('purpose',null)">
+          <div class="section-hdr">
+            <div class="section-title">DHA & HR Portfolio — <span style="color:#c0392b;">click to view Purpose dashboard</span></div>
+            <div style="font-size:10px;background:#c0392b;color:#fff;padding:2px 8px;border-radius:10px;">New</div>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;">
+            <div>
+              <div class="kpi-label">Total assessments</div>
+              <div class="kpi-val" style="font-size:16px;">19</div>
+              <div style="font-size:10px;color:#27ae60;">+4 this week</div>
+            </div>
+            <div>
+              <div class="kpi-label">HR earned</div>
+              <div class="kpi-val" style="font-size:16px;">23</div>
+              <div style="font-size:10px;color:#27ae60;">51% of eligible</div>
+            </div>
+            <div>
+              <div class="kpi-label">Active days met</div>
+              <div class="kpi-val" style="font-size:16px;">27</div>
+              <div style="font-size:10px;color:#e67e22;">below target</div>
+            </div>
+            <div>
+              <div class="kpi-label">App downloads</div>
+              <div class="kpi-val" style="font-size:16px;">38</div>
+              <div style="font-size:10px;color:#c0392b;">33 pending</div>
+            </div>
+          </div>
+          <div style="font-size:10px;color:#c0392b;margin-top:8px;">3 nudges waiting for you → View Purpose dashboard</div>
+        </div>
+
+        <div class="two-col">
+          <div class="card" style="margin:0;">
+            <div class="section-hdr"><div class="section-title">Renewal summary</div><div class="view-all">View all</div></div>
+            <div style="font-size:11px;color:#555;display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;"><span>Total renewals</span><span style="font-weight:500;color:#1a2340;">1038</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Due today</span><span style="font-weight:500;color:#c0392b;">28</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>In grace</span><span style="font-weight:500;color:#e67e22;">200</span></div>
+            </div>
+          </div>
+          <div class="card" style="margin:0;">
+            <div class="section-hdr"><div class="section-title">Active customers</div></div>
+            <div style="font-size:11px;color:#555;display:flex;flex-direction:column;gap:4px;">
+              <div style="display:flex;justify-content:space-between;"><span>Total</span><span style="font-weight:500;color:#1a2340;">3548</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Active (app)</span><span style="font-weight:500;color:#27ae60;">2223</span></div>
+              <div style="display:flex;justify-content:space-between;"><span>Not on app</span><span style="font-weight:500;color:#c0392b;">1325</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="page-purpose" class="page">
+        <div class="topbar">
+          <div>
+            <div class="greeting">Purpose dashboard</div>
+            <div style="font-size:10px;color:#aaa;margin-top:2px;">Driving AD, DHA & HR adoption — April 2026</div>
+          </div>
+          <div class="top-actions">
+            <select style="font-size:11px;padding:4px 8px;border:1px solid #ddd;border-radius:6px;background:#fff;color:#333;" onchange="toggleView(this.value)">
+              <option value="agent">My portfolio</option>
+              <option value="fls">Team view (FLS)</option>
+            </select>
+            <button class="btn-red" onclick="sendPrompt('Draft a bulk SMS nudge for customers who have not completed DHA yet')">Bulk nudge ↗</button>
+          </div>
+        </div>
+
+        <div class="kpi-row">
+          <div class="kpi-card sel" onclick="selectKPI(this,'dha')">
+            <div class="kpi-label">DHA completed</div>
+            <div class="kpi-val">19<span style="font-size:12px;color:#aaa;">/45</span></div>
+            <div class="kpi-sub kpi-trend-dn">42% — below 60% target</div>
+          </div>
+          <div class="kpi-card" onclick="selectKPI(this,'hr')">
+            <div class="kpi-label">HR earned this month</div>
+            <div class="kpi-val">23<span style="font-size:12px;color:#aaa;">/45</span></div>
+            <div class="kpi-sub kpi-trend-up">51% — on track</div>
+          </div>
+          <div class="kpi-card" onclick="selectKPI(this,'ad')">
+            <div class="kpi-label">Active days met</div>
+            <div class="kpi-val">27<span style="font-size:12px;color:#aaa;">/45</span></div>
+            <div class="kpi-sub kpi-trend-dn">60% — needs push</div>
+          </div>
+          <div class="kpi-card" onclick="selectKPI(this,'app')">
+            <div class="kpi-label">App downloaded</div>
+            <div class="kpi-val">38<span style="font-size:12px;color:#aaa;">/71</span></div>
+            <div class="kpi-sub kpi-trend-dn">54% — 33 missing</div>
+          </div>
+        </div>
+
+        <div class="two-col">
+          <div class="card" style="margin:0;">
+            <div class="section-hdr"><div class="section-title">Portfolio adoption</div></div>
+            <div class="prog-row"><span class="prog-label">DHA</span><div class="prog-bar"><div class="prog-fill" style="width:42%;background:#c0392b;"></div></div><span class="prog-pct">42%</span></div>
+            <div class="prog-row"><span class="prog-label">HR</span><div class="prog-bar"><div class="prog-fill" style="width:51%;background:#e67e22;"></div></div><span class="prog-pct">51%</span></div>
+            <div class="prog-row"><span class="prog-label">Active days</span><div class="prog-bar"><div class="prog-fill" style="width:60%;background:#e67e22;"></div></div><span class="prog-pct">60%</span></div>
+            <div class="prog-row"><span class="prog-label">App download</span><div class="prog-bar"><div class="prog-fill" style="width:54%;background:#1a6aa8;"></div></div><span class="prog-pct">54%</span></div>
+            <div class="prog-row"><span class="prog-label">HHS generated</span><div class="prog-bar"><div class="prog-fill" style="width:74%;background:#27ae60;"></div></div><span class="prog-pct">74%</span></div>
+            <div style="margin-top:8px;padding-top:8px;border-top:0.5px solid #eee;">
+              <div style="font-size:10px;color:#888;">Zone benchmark</div>
+              <div class="prog-row" style="margin-top:4px;"><span class="prog-label">DHA target</span><div class="prog-bar"><div class="prog-fill" style="width:60%;background:#e8e8e8;border:0.5px dashed #bbb;"></div></div><span class="prog-pct" style="color:#aaa;">60%</span></div>
+            </div>
+          </div>
+
+          <div class="card" style="margin:0;">
+            <div class="section-hdr"><div class="section-title">Nudges — top 3 today</div><div style="font-size:10px;background:#fff4e6;color:#a0530a;padding:1px 7px;border-radius:10px;">3 actions</div></div>
+            <div class="nudge-item">
+              <div class="nudge-msg">26 customers haven't activated DHA — highest impact this month</div>
+              <div class="nudge-actions">
+                <button class="nudge-btn nb-sms" onclick="sendPrompt('Write an SMS nudge for customers who have not completed their DHA')">SMS</button>
+                <button class="nudge-btn nb-wa" onclick="sendPrompt('Write a WhatsApp message for DHA activation nudge')">WhatsApp</button>
+                <button class="nudge-btn nb-email" onclick="sendPrompt('Write an email for DHA activation nudge')">Email</button>
+                <button class="nudge-btn nb-view">View list</button>
+              </div>
+            </div>
+            <div class="nudge-item amber">
+              <div class="nudge-msg">Priya S. hasn't logged in since policy issuance 9 days ago</div>
+              <div class="nudge-actions">
+                <button class="nudge-btn nb-wa" onclick="sendPrompt('Write a WhatsApp message for a customer who has not yet logged into the app after policy issuance')">WhatsApp</button>
+                <button class="nudge-btn nb-sms">SMS</button>
+                <button class="nudge-btn nb-view">Profile</button>
+              </div>
+            </div>
+            <div class="nudge-item green">
+              <div class="nudge-msg">Your HR % (51%) is below zone avg (64%) — focus on top 5</div>
+              <div class="nudge-actions">
+                <button class="nudge-btn nb-view">View 5 customers</button>
+              </div>
+            </div>
+            <div class="inline-note">Max 5 nudges/day · ranked by impact · WhatsApp sent only if SMS unanswered 48h</div>
+          </div>
+        </div>
+
+        <div id="fls-view" style="display:none;" class="card">
+          <div class="section-hdr"><div class="section-title">Team leaderboard (FLS view)</div></div>
+          <table class="cust-table">
+            <thead><tr><th>Agent</th><th>DHA %</th><th>HR %</th><th>AD %</th><th>App %</th><th>vs Zone</th></tr></thead>
+            <tbody>
+              <tr><td>Rajeev M.</td><td style="color:#c0392b;">42%</td><td style="color:#e67e22;">51%</td><td>60%</td><td>54%</td><td style="color:#c0392b;">Below</td></tr>
+              <tr><td>Sneha K.</td><td style="color:#27ae60;">67%</td><td style="color:#27ae60;">71%</td><td>78%</td><td>70%</td><td style="color:#27ae60;">Above</td></tr>
+              <tr><td>Amit V.</td><td>58%</td><td>62%</td><td>65%</td><td>61%</td><td style="color:#e67e22;">At par</td></tr>
+              <tr><td>Meena D.</td><td style="color:#c0392b;">35%</td><td style="color:#c0392b;">40%</td><td>50%</td><td>48%</td><td style="color:#c0392b;">Below</td></tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="card">
+          <div class="section-hdr"><div class="section-title">DHA segment — pending customers</div><div class="view-all" onclick="showPage('customers',null)">Go to My customers</div></div>
+          <div id="purpose-seg-list">
+            <table class="cust-table">
+              <thead><tr><th>Customer</th><th>Policy</th><th>DHA</th><th>HR</th><th>Active days</th><th>App</th><th>Action</th></tr></thead>
+              <tbody>
+                <tr><td>Priya Sharma</td><td>Fresh</td><td><span class="pill pill-miss">Pending</span></td><td><span class="pill pill-miss">Pending</span></td><td><span class="pill pill-pend">2/30</span></td><td><span class="pill pill-miss">Not downloaded</span></td><td><span class="send-icon" onclick="openNudge('Priya Sharma')">Send nudge</span></td></tr>
+                <tr><td>Sunita Rao</td><td>Fresh</td><td><span class="pill pill-miss">Pending</span></td><td><span class="pill pill-miss">Pending</span></td><td><span class="pill pill-pend">5/30</span></td><td><span class="pill pill-done">Downloaded</span></td><td><span class="send-icon" onclick="openNudge('Sunita Rao')">Send nudge</span></td></tr>
+                <tr><td>Ravi Kumar</td><td>Renewal</td><td><span class="pill pill-done">Done</span></td><td><span class="pill pill-pend">Pending</span></td><td><span class="pill pill-done">18/30</span></td><td><span class="pill pill-done">Downloaded</span></td><td><span class="send-icon" onclick="openNudge('Ravi Kumar')">HR nudge</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div id="page-customers" class="page">
+        <div class="topbar">
+          <div><div class="greeting">My customers</div><div style="font-size:10px;color:#aaa;margin-top:2px;">Purpose status per customer</div></div>
+          <div class="top-actions">
+            <button class="btn-outline" onclick="sendPrompt('Which of my customers are at highest risk of low Purpose adoption this month?')">At-risk list ↗</button>
+            <button class="btn-red">Send bulk nudge</button>
+          </div>
+        </div>
+
+        <div class="filter-bar">
+          <div class="fchip active" onclick="filterCust('all',this)">All (71)</div>
+          <div class="fchip" onclick="filterCust('dha',this)">DHA pending (26)</div>
+          <div class="fchip" onclick="filterCust('hr',this)">HR pending (22)</div>
+          <div class="fchip" onclick="filterCust('ad',this)">Active days low (18)</div>
+          <div class="fchip" onclick="filterCust('app',this)">No app (33)</div>
+          <div class="fchip" onclick="filterCust('new',this)">New — no login (8)</div>
+        </div>
+
+        <div class="card" style="padding:0;overflow:hidden;">
+          <table class="cust-table" style="table-layout:fixed;">
+            <thead>
+              <tr>
+                <th style="width:130px;">Customer</th>
+                <th style="width:55px;">Type</th>
+                <th style="width:70px;">App</th>
+                <th style="width:65px;">DHA</th>
+                <th style="width:65px;">HR</th>
+                <th style="width:70px;">Active days</th>
+                <th style="width:65px;">HHS</th>
+                <th>Nudge</th>
+              </tr>
+            </thead>
+            <tbody id="cust-tbody">
+            </tbody>
+          </table>
+        </div>
+        <div class="inline-note" style="margin-top:6px;">Tap any row nudge to draft a personalised message · UTM links auto-attributed by channel (portal / iOS / Android)</div>
+      </div>
+
+      <div id="page-mobile" class="page">
+        <div class="topbar">
+          <div><div class="greeting">Mobile app — screens</div><div style="font-size:10px;color:#aaa;margin-top:2px;">ABHI One agent app · Purpose entry points</div></div>
+        </div>
+        <div class="mobile-screens">
+          <div>
+            <div style="font-size:10px;color:#888;margin-bottom:6px;text-align:center;">Home — Purpose widget</div>
+            <div class="phone">
+              <div class="phone-bar">
+                <div class="phone-back">← Back</div>
+                <div class="phone-title">Dashboard</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.4);">9:41</div>
+              </div>
+              <div class="phone-body">
+                <div class="phone-card" style="margin-bottom:6px;">
+                  <div class="ph-label">Good afternoon, Rajeev</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:4px;">
+                    <div style="background:#f9f9f9;border-radius:4px;padding:5px 6px;"><div style="font-size:8px;color:#888;">Policies</div><div style="font-size:13px;font-weight:500;color:#1a2340;">229</div></div>
+                    <div style="background:#f9f9f9;border-radius:4px;padding:5px 6px;"><div style="font-size:8px;color:#888;">Premium</div><div style="font-size:13px;font-weight:500;color:#1a2340;">1.51Cr</div></div>
+                  </div>
+                </div>
+                <div class="phone-card" style="border-color:#c0392b;cursor:pointer;">
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+                    <div style="font-size:10px;font-weight:500;color:#c0392b;">Purpose</div>
+                    <div style="font-size:8px;background:#fdecea;color:#9b1c1c;padding:1px 5px;border-radius:8px;">3 nudges</div>
+                  </div>
+                  <div class="ph-prog-row"><span class="ph-prog-lbl">DHA</span><div class="ph-prog-bar"><div class="ph-prog-fill" style="width:42%;background:#c0392b;"></div></div><span class="ph-prog-pct">42%</span></div>
+                  <div class="ph-prog-row"><span class="ph-prog-lbl">HR</span><div class="ph-prog-bar"><div class="ph-prog-fill" style="width:51%;background:#e67e22;"></div></div><span class="ph-prog-pct">51%</span></div>
+                  <div class="ph-prog-row"><span class="ph-prog-lbl">Active days</span><div class="ph-prog-bar"><div class="ph-prog-fill" style="width:60%;background:#1a6aa8;"></div></div><span class="ph-prog-pct">60%</span></div>
+                  <button class="ph-btn">View Purpose dashboard</button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:10px;color:#888;margin-bottom:6px;text-align:center;">Purpose dashboard (app)</div>
+            <div class="phone">
+              <div class="phone-bar">
+                <div class="phone-back">← Home</div>
+                <div class="phone-title">Purpose</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.4);">9:41</div>
+              </div>
+              <div class="phone-body">
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-bottom:6px;">
+                  <div class="phone-card" style="padding:6px 8px;"><div class="ph-label">DHA</div><div class="ph-val">19/45</div><div class="ph-sub" style="color:#c0392b;">42%</div></div>
+                  <div class="phone-card" style="padding:6px 8px;"><div class="ph-label">HR earned</div><div class="ph-val">23/45</div><div class="ph-sub" style="color:#27ae60;">51%</div></div>
+                  <div class="phone-card" style="padding:6px 8px;"><div class="ph-label">Active days</div><div class="ph-val">27/45</div><div class="ph-sub" style="color:#e67e22;">60%</div></div>
+                  <div class="phone-card" style="padding:6px 8px;"><div class="ph-label">App download</div><div class="ph-val">38/71</div><div class="ph-sub" style="color:#1a6aa8;">54%</div></div>
+                </div>
+                <div class="nudge-strip">
+                  <div class="ns-msg">26 customers haven't activated DHA</div>
+                  <div class="ns-btns">
+                    <button class="ns-btn" style="background:#e8f4fd;color:#1a6aa8;">SMS</button>
+                    <button class="ns-btn" style="background:#e8fdf0;color:#1a7a40;">WhatsApp</button>
+                    <button class="ns-btn" style="background:#f0f0f0;color:#555;">View</button>
+                  </div>
+                </div>
+                <div class="nudge-strip" style="border-left-color:#e67e22;background:#fffbf4;">
+                  <div class="ns-msg">Priya S. — no app login in 9 days</div>
+                  <div class="ns-btns">
+                    <button class="ns-btn" style="background:#e8fdf0;color:#1a7a40;">WhatsApp</button>
+                    <button class="ns-btn" style="background:#f0f0f0;color:#555;">Call</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size:10px;color:#888;margin-bottom:6px;text-align:center;">My customers — Purpose column</div>
+            <div class="phone">
+              <div class="phone-bar">
+                <div class="phone-back">← Back</div>
+                <div class="phone-title">My customers</div>
+                <div style="font-size:9px;color:rgba(255,255,255,0.4);">9:41</div>
+              </div>
+              <div class="phone-body">
+                <div style="display:flex;gap:4px;margin-bottom:6px;overflow-x:auto;">
+                  <div style="font-size:8px;padding:2px 7px;border-radius:10px;background:#c0392b;color:#fff;white-space:nowrap;">All</div>
+                  <div style="font-size:8px;padding:2px 7px;border-radius:10px;background:#fff;border:0.5px solid #ddd;color:#555;white-space:nowrap;">DHA pending</div>
+                  <div style="font-size:8px;padding:2px 7px;border-radius:10px;background:#fff;border:0.5px solid #ddd;color:#555;white-space:nowrap;">No app</div>
+                </div>
+                <div class="phone-card" style="padding:6px 8px;">
+                  <div class="ph-row"><span class="ph-name" style="font-weight:500;">Priya Sharma</span><div class="ph-badges"><span class="ph-badge ph-miss">DHA!</span><span class="ph-badge ph-miss">No app</span></div></div>
+                  <div class="ph-row"><span class="ph-name">Sunita Rao</span><div class="ph-badges"><span class="ph-badge ph-miss">DHA!</span><span class="ph-badge ph-done">App OK</span></div></div>
+                  <div class="ph-row"><span class="ph-name">Ravi Kumar</span><div class="ph-badges"><span class="ph-badge ph-done">DHA OK</span><span class="ph-badge ph-pend">HR!</span></div></div>
+                  <div class="ph-row"><span class="ph-name">Meena Iyer</span><div class="ph-badges"><span class="ph-badge ph-miss">DHA!</span><span class="ph-badge ph-miss">No app</span></div></div>
+                  <div class="ph-row"><span class="ph-name">Deepak Nair</span><div class="ph-badges"><span class="ph-badge ph-done">DHA OK</span><span class="ph-badge ph-done">HR OK</span></div></div>
+                </div>
+                <button class="ph-btn" style="margin-top:4px;">Send batch nudge to DHA pending</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;" class="card">
+          <div class="section-hdr"><div class="section-title">Nudge flow — escalation logic</div></div>
+          <div style="display:flex;align-items:center;gap:0;flex-wrap:wrap;gap:6px;font-size:11px;">
+            <div style="background:#e8f4fd;color:#1a6aa8;padding:5px 10px;border-radius:6px;font-weight:500;">Day 0 — SMS sent</div>
+            <div style="color:#aaa;font-size:14px;">→</div>
+            <div style="background:#f5f5f5;color:#555;padding:5px 10px;border-radius:6px;">No response 48h</div>
+            <div style="color:#aaa;font-size:14px;">→</div>
+            <div style="background:#e8fdf0;color:#1a7a40;padding:5px 10px;border-radius:6px;font-weight:500;">WhatsApp nudge</div>
+            <div style="color:#aaa;font-size:14px;">→</div>
+            <div style="background:#f5f5f5;color:#555;padding:5px 10px;border-radius:6px;">No response 72h</div>
+            <div style="color:#aaa;font-size:14px;">→</div>
+            <div style="background:#fff4e6;color:#a0530a;padding:5px 10px;border-radius:6px;font-weight:500;">Email + agent alert</div>
+            <div style="color:#aaa;font-size:14px;">→</div>
+            <div style="background:#fdecea;color:#9b1c1c;padding:5px 10px;border-radius:6px;font-weight:500;">Agent manual call</div>
+          </div>
+          <div class="inline-note" style="margin-top:8px;">UTM parameters auto-appended per channel (portal / iOS / Android) · All sends tracked under agent attribution</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<div id="nudge-modal" style="display:none;margin-top:12px;background:var(--color-background-primary);border-radius:8px;border:0.5px solid #e8e8e8;padding:14px;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+    <div style="font-size:13px;font-weight:500;color:#1a2340;">Send nudge — <span id="nudge-name"></span></div>
+    <button onclick="closeNudge()" style="font-size:11px;color:#888;background:none;border:none;cursor:pointer;">Close</button>
+  </div>
+  <div style="display:flex;gap:6px;margin-bottom:10px;">
+    <button class="nudge-btn nb-sms" style="padding:5px 12px;font-size:11px;" onclick="sendPrompt('Draft an SMS for a customer who has not completed their DHA. Keep it short, warm, and actionable.')">Draft SMS ↗</button>
+    <button class="nudge-btn nb-wa" style="padding:5px 12px;font-size:11px;" onclick="sendPrompt('Draft a WhatsApp message for a customer who has not completed their DHA. Use a conversational tone with a clear CTA.')">Draft WhatsApp ↗</button>
+    <button class="nudge-btn nb-email" style="padding:5px 12px;font-size:11px;" onclick="sendPrompt('Draft an email for a customer who has not completed their DHA. Professional, brief, with a UTM link placeholder.')">Draft Email ↗</button>
+  </div>
+  <div style="font-size:10px;color:#aaa;">UTM link will be auto-generated · channel attribution tracked</div>
+</div>
+
+<script>
+const allCustomers = [
+  {name:"Priya Sharma",type:"Fresh",app:false,dha:"pending",hr:"pending",ad:"2/30",hhs:"pending"},
+  {name:"Sunita Rao",type:"Fresh",app:true,dha:"pending",hr:"pending",ad:"5/30",hhs:"pending"},
+  {name:"Ravi Kumar",type:"Renewal",app:true,dha:"done",hr:"pending",ad:"18/30",hhs:"done"},
+  {name:"Meena Iyer",type:"Fresh",app:false,dha:"pending",hr:"pending",ad:"0/30",hhs:"pending"},
+  {name:"Deepak Nair",type:"Renewal",app:true,dha:"done",hr:"earned",ad:"22/30",hhs:"done"},
+  {name:"Anjali Shah",type:"Fresh",app:false,dha:"pending",hr:"pending",ad:"1/30",hhs:"pending"},
+  {name:"Suresh Pillai",type:"Renewal",app:true,dha:"done",hr:"earned",ad:"20/30",hhs:"done"},
+  {name:"Kavya Menon",type:"Fresh",app:true,dha:"pending",hr:"pending",ad:"8/30",hhs:"pending"},
+];
+
+function pill(status,label){
+  const cls = status==="done"||status==="earned"?"pill-done":status==="pending"?"pill-pend":"pill-miss";
+  return `<span class="pill ${cls}">${label}</span>`;
+}
+
+function renderCust(filter){
+  const tbody = document.getElementById("cust-tbody");
+  let rows = allCustomers;
+  if(filter==="dha") rows = rows.filter(r=>r.dha==="pending");
+  else if(filter==="hr") rows = rows.filter(r=>r.hr==="pending"||r.hr==="miss");
+  else if(filter==="ad") rows = rows.filter(r=>parseInt(r.ad)<10);
+  else if(filter==="app") rows = rows.filter(r=>!r.app);
+  else if(filter==="new") rows = rows.filter(r=>r.type==="Fresh"&&!r.app);
+  tbody.innerHTML = rows.map(r=>`
+    <tr>
+      <td style="font-weight:500;font-size:11px;">${r.name}</td>
+      <td style="font-size:10px;color:#888;">${r.type}</td>
+      <td>${r.app?'<span class="pill pill-done">Downloaded</span>':'<span class="pill pill-miss">Missing</span>'}</td>
+      <td>${pill(r.dha,r.dha==="done"?"Done":"Pending")}</td>
+      <td>${pill(r.hr,r.hr==="earned"?"Earned":r.hr==="pending"?"Pending":"Missing")}</td>
+      <td>${pill(parseInt(r.ad)>=15?"done":"pending",r.ad)}</td>
+      <td>${pill(r.hhs,r.hhs==="done"?"Done":"Pending")}</td>
+      <td><span class="send-icon" onclick="openNudge('${r.name}')">Send</span></td>
+    </tr>
+  `).join("");
+}
+
+function filterCust(f,el){
+  document.querySelectorAll(".fchip").forEach(c=>c.classList.remove("active"));
+  el.classList.add("active");
+  renderCust(f);
+}
+
+function showPage(id,el){
+  document.querySelectorAll(".page").forEach(p=>p.classList.remove("active"));
+  document.getElementById("page-"+id).classList.add("active");
+  document.querySelectorAll(".proto-nav-item").forEach(n=>n.classList.remove("active"));
+  document.querySelectorAll(".sb-item").forEach(n=>n.classList.remove("active"));
+  if(el) el.classList.add("active");
+  document.getElementById("nudge-modal").style.display="none";
+}
+
+function selectKPI(el,type){
+  document.querySelectorAll(".kpi-card").forEach(c=>c.classList.remove("sel"));
+  el.classList.add("sel");
+}
+
+function toggleView(val){
+  document.getElementById("fls-view").style.display = val==="fls"?"block":"none";
+}
+
+function openNudge(name){
+  const m = document.getElementById("nudge-modal");
+  document.getElementById("nudge-name").textContent = name;
+  m.style.display="block";
+}
+
+function closeNudge(){
+  document.getElementById("nudge-modal").style.display="none";
+}
+
+renderCust("all");
+</script>
